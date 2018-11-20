@@ -38,7 +38,7 @@ function define(config){
     */
 
     var baseUrl = "https://api.kokos.one/v1";
-    var requiredFields = ["pair", "side", "volume", "refund_address", "receive_address"];
+    var requiredFields = ["pair", "side", "volume", "refund_address", "receive_address", "email"];
     function sign(uri, message, nonce, secret){      
         var md1 = forge.md.sha256.create();
         md1.update(secret);
@@ -113,6 +113,11 @@ function define(config){
     }
 
     function initiateOrder(info){
+
+        if(typeof(info.email) == "undefined"){
+            info.email = config.email;
+        }
+        
         if(!containsAll(info, requiredFields)){
             return reject({error: "missing required field",
                            requiredFields: requiredFields});
