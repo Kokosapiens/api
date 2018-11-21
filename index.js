@@ -177,7 +177,9 @@ function define(config){
 
         });
     }
+    
     var nonce = createNoncer();
+
     function depth(pair){
         var url = buildPrivateUrl([baseUrl,config.token ,"book", "depth"]);
         var uri = buildUri(["/v1", config.token, "book", "depth"]);
@@ -190,12 +192,73 @@ function define(config){
         
         return request("POST", url, dataMessage,
                        signature, true, true);
-    }    
+    }
+
+    function openOrders(pair){
+        var url = buildPrivateUrl([baseUrl,config.token ,"auth", "open-orders"]);
+        var uri = buildUri(["/v1", config.token, "auth", "open-orders"]);
+        var theNonce = nonce();
+        var data = {pair: pair, nonce: theNonce};
+        var dataMessage = JSON.stringify(data);
+        var signature = sign(uri, dataMessage,
+                            theNonce,
+                             config.secret);
+        
+        return request("POST", url, dataMessage,
+                       signature, true, true);
+    }
+
+    function closedOrders(pair){
+        var url = buildPrivateUrl([baseUrl,config.token ,"auth", "closed-orders"]);
+        var uri = buildUri(["/v1", config.token, "auth", "closed-orders"]);
+        var theNonce = nonce();
+        var data = {pair: pair, nonce: theNonce};
+        var dataMessage = JSON.stringify(data);
+        var signature = sign(uri, dataMessage,
+                            theNonce,
+                             config.secret);
+        
+        return request("POST", url, dataMessage,
+                       signature, true, true);
+    }
+
+    function cancelledOrders(pair){
+        var url = buildPrivateUrl([baseUrl,config.token ,"auth", "cancelled-orders"]);
+        var uri = buildUri(["/v1", config.token, "auth", "cancelled-orders"]);
+        var theNonce = nonce();
+        var data = {pair: pair, nonce: theNonce};
+        var dataMessage = JSON.stringify(data);
+        var signature = sign(uri, dataMessage,
+                            theNonce,
+                             config.secret);
+        
+        return request("POST", url, dataMessage,
+                       signature, true, true);
+    }
+
+    function expiredOrders(pair){
+        var url = buildPrivateUrl([baseUrl,config.token ,"auth", "expired-orders"]);
+        var uri = buildUri(["/v1", config.token, "auth", "expired-orders"]);
+        var theNonce = nonce();
+        var data = {pair: pair, nonce: theNonce};
+        var dataMessage = JSON.stringify(data);
+        var signature = sign(uri, dataMessage,
+                            theNonce,
+                             config.secret);
+        
+        return request("POST", url, dataMessage,
+                       signature, true, true);
+    }
+
     return {assets: getAssets,
             pairs: getPairs,
             ticker: getTicker,
             limits: getLimits,
             depth: depth,
+            auth: {orders: {open: openOrders,
+                            closed: closedOrders,
+                            cancelled: cancelledOrders,
+                            expired: expiredOrders}},
             order: {initiate: initiateOrder,
                     info: getOrderInfo,
                     cancel: cancelOrder}};
